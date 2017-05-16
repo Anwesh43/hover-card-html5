@@ -6,7 +6,7 @@ class HoverCard  {
         this.img = document.createElement('img')
         document.body.appendChild(img)
         this.clipW = 0
-
+        this.textComponents = []
     }
     render() {
         const context = this.context
@@ -32,8 +32,20 @@ class HoverCard  {
             this.h = image.height
             this.canvas.width = this.w
             this.canvas.height = this.h
+            this.context.font = context.font.replace(/\d{2}/,'30')
             this.render()
 
+        }
+    }
+    class TextComponent {
+        constructor(text,x,y) {
+            this.x = x
+            this.y = y
+            this.text = text
+        }
+        render() {
+            context.fillStyle = 'white'
+            context.fillText(this.text,x,y)
         }
     }
 }
