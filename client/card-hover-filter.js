@@ -6,6 +6,7 @@ class HoverCard  {
         this.img = document.createElement('img')
         document.body.appendChild(this.img)
         this.clipW = 0
+        this.dir = 0
         this.textComponents = []
     }
     render() {
@@ -15,8 +16,9 @@ class HoverCard  {
         const image = this.image
         context.clearRect(0,0,w,h)
         context.drawImage(image,0,0,w,h)
+        context.save()
         context.beginPath()
-        context.rect(0,w-this.clipW,this.clipW,h)
+        context.rect(0,0,this.clipW,h)
         context.clip()
         context.fillStyle = this.color
         context.globalAlpha = 0.5
@@ -24,7 +26,29 @@ class HoverCard  {
         this.textComponents.forEach((textComponent)=>{
             textComponent.render(context)
         })
+        context.restore()
         this.img.src = canvas.toDataURL()
+        console.log("rendering")
+    }
+    startAnimating() {
+        //console.log(this.dir)
+        const interval = setInterval(()=>{
+            console.log(this.clipW)
+            this.clipW += this.dir *(this.w/10)
+            if((this.clipW > this.w && this.dir == 1) || (this.clipW <0 && this.dir == -1)) {
+                if(this.clipW > this.w) {
+                    this.clipW = this.w
+                }
+                else if(this.clipW < 0) {
+                    this.clipW = 0
+                }
+                this.dir = 0
+            }
+            this.render()
+            if(this.dir == 0) {
+                clearInterval(interval)
+            }
+        },10)
     }
     create() {
         this.canvas = document.createElement('canvas')
@@ -41,7 +65,18 @@ class HoverCard  {
             this.render()
 
         }
-
+        this.img.onmouseover = (event)=>{
+            if(this.clipW == 0 && this.dir == 0) {
+                this.dir = 1
+                this.startAnimating()
+            }
+        }
+        this.img.onmouseout = (event) => {
+            if(this.clipW == this.w && this.dir == 0) {
+                this.dir = -1
+                this.startAnimating()
+            }
+        }
     }
     createTextComponents() {
         const context = this.context
@@ -77,7 +112,7 @@ class TextComponent {
         this.text = text
     }
     render(context) {
-        console.log(this.text)
+        //console.log(this.text)
         context.globalAlpha = 1
         context.fillStyle = 'white'
         context.fillText(this.text,this.x,this.y)
