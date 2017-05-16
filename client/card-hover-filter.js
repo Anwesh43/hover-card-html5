@@ -13,6 +13,7 @@ class HoverCard  {
         const canvas = this.canvas
         const w = this.w,h = this.h
         const image = this.image
+        this.clipW = w
         context.clearRect(0,0,w,h)
         context.drawImage(image,0,0,w,h)
         context.beginPath()
@@ -37,43 +38,44 @@ class HoverCard  {
             this.render()
 
         }
-        createTextComponents() {
-            const context = this.context
-            const w = this.w,h = this.h
-            const words = this.text.split(" ")
-            var msg = "",y = h/10
-            var exceededLimit = false
-            for(var i=0;i<words.length;i++) {
-                if(context.measureText(words[i]+msg).width > 9*w/10) {
-                    if(y+h/20>=9*h/10) {
-                        this.textComponents.push(new TextComponent(msg+"...",w/10,y))
-                        exceededLimit = true
-                        break
-                    }
-                    this.textComponents.push(new TextComponent(msg,w/10,y))
-                    y += h/20
-                    msg = words[i]
 
+    }
+    createTextComponents() {
+        const context = this.context
+        const w = this.w,h = this.h
+        const words = this.text.split(" ")
+        var msg = "",y = h/10
+        var exceededLimit = false
+        for(var i=0;i<words.length;i++) {
+            if(context.measureText(words[i]+msg).width > 9*w/10) {
+                if(y+h/20>=9*h/10) {
+                    this.textComponents.push(new TextComponent(msg+"...",w/10,y))
+                    exceededLimit = true
+                    break
                 }
-                else {
-                    msg += words[i]
+                this.textComponents.push(new TextComponent(msg,w/10,y))
+                y += h/20
+                msg = words[i]
 
-                }
             }
-            if(!exceededLimit) {
-                this.textComponents.push(new TextComponent())
+            else {
+                msg += words[i]
+
             }
+        }
+        if(!exceededLimit) {
+            this.textComponents.push(new TextComponent())
         }
     }
-    class TextComponent {
-        constructor(text,x,y) {
-            this.x = x
-            this.y = y
-            this.text = text
-        }
-        render() {
-            context.fillStyle = 'white'
-            context.fillText(this.text,x,y)
-        }
+}
+class TextComponent {
+    constructor(text,x,y) {
+        this.x = x
+        this.y = y
+        this.text = text
+    }
+    render() {
+        context.fillStyle = 'white'
+        context.fillText(this.text,x,y)
     }
 }
