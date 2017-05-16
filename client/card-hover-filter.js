@@ -32,9 +32,37 @@ class HoverCard  {
             this.h = image.height
             this.canvas.width = this.w
             this.canvas.height = this.h
-            this.context.font = context.font.replace(/\d{2}/,'30')
+            this.context.font = context.font.replace(/\d{2}/,`${this.h/22}`)
+            this.createTextComponents()
             this.render()
 
+        }
+        createTextComponents() {
+            const context = this.context
+            const w = this.w,h = this.h
+            const words = this.text.split(" ")
+            var msg = "",y = h/10
+            var exceededLimit = false
+            for(var i=0;i<words.length;i++) {
+                if(context.measureText(words[i]+msg).width > 9*w/10) {
+                    if(y+h/20>=9*h/10) {
+                        this.textComponents.push(new TextComponent(msg+"...",w/10,y))
+                        exceededLimit = true
+                        break
+                    }
+                    this.textComponents.push(new TextComponent(msg,w/10,y))
+                    y += h/20
+                    msg = words[i]
+
+                }
+                else {
+                    msg += words[i]
+
+                }
+            }
+            if(!exceededLimit) {
+                this.textComponents.push(new TextComponent())
+            }
         }
     }
     class TextComponent {
